@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>중간계 원정대 MBTI 테스트</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Noto+Serif+KR:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ring-gold: #d4af37;
+            --deep-brown: #2c1810;
+            --parchment: #f4e4bc;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            font-family: 'Noto Serif KR', serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .cinzel {
+            font-family: 'Cinzel', serif;
+        }
+
+        .parchment-bg {
+            background-color: var(--parchment);
+            background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+            color: var(--deep-brown);
+            border: 8px double var(--deep-brown);
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        .btn-choice {
+            transition: all 0.3s ease;
+            border: 2px solid var(--deep-brown);
+        }
+
+        .btn-choice:hover {
+            background-color: var(--deep-brown);
+            color: var(--parchment);
+            transform: translateY(-2px);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #444;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--ring-gold);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .result-img {
+            max-width: 300px;
+            border-radius: 15px;
+            border: 4px solid var(--ring-gold);
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="max-w-2xl w-full text-center fade-in">
+        <h1 class="cinzel text-4xl md:text-6xl text-yellow-500 mb-6 drop-shadow-lg">The Lord of the Rings</h1>
+        <h2 class="text-2xl md:text-3xl font-bold mb-8">중간계 원정대 합류 테스트</h2>
+        <div class="parchment-bg p-8 rounded-lg mb-8">
+            <p class="text-lg leading-relaxed mb-6">
+                절대반지를 파괴하기 위한 여정이 시작되었습니다.<br>
+                당신은 어떤 영웅의 기질을 가지고 있습니까?<br>
+                당신의 선택이 중간계의 운명을 결정할 것입니다.
+            </p>
+            <button onclick="startGame()" class="cinzel bg-yellow-600 hover:bg-yellow-700 text-white px-10 py-4 rounded-full text-xl font-bold transition-all transform hover:scale-105 shadow-xl">
+                Begin the Quest
+            </button>
+        </div>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quiz-screen" class="max-w-2xl w-full hidden">
+        <div class="mb-6">
+            <div class="flex justify-between items-end mb-2">
+                <span class="cinzel text-yellow-500 font-bold" id="question-counter">Question 1/12</span>
+                <span class="text-sm opacity-70">원정길을 따라가는 중...</span>
+            </div>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="parchment-bg p-8 rounded-lg min-h-[400px] flex flex-col justify-between">
+            <div>
+                <h3 id="question-text" class="text-2xl font-bold mb-8 text-center leading-tight"></h3>
+            </div>
+            <div id="choices" class="space-y-4">
+                <!-- Choices will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="result-screen" class="max-w-2xl w-full hidden fade-in">
+        <div class="parchment-bg p-8 rounded-lg text-center relative overflow-hidden">
+            <h3 class="cinzel text-sm uppercase tracking-widest mb-2">당신의 영혼과 닮은 영웅</h3>
+            <h2 id="result-character" class="text-4xl font-bold mb-4 text-yellow-800"></h2>
+            <div class="flex justify-center mb-6" id="result-image-container">
+                <!-- SVG or Emoji Icon placeholder -->
+                <div class="text-8xl" id="character-emoji"></div>
+            </div>
+            <div class="mb-6 p-4 bg-white/30 rounded border border-brown-900/20 italic" id="result-desc">
+            </div>
+            <div class="text-left space-y-4 mb-8">
+                <div class="flex items-center">
+                    <span class="font-bold w-24">MBTI 유형:</span>
+                    <span id="result-mbti" class="cinzel text-lg bg-yellow-800 text-white px-3 py-1 rounded"></span>
+                </div>
+                <div id="result-traits" class="text-sm leading-relaxed">
+                </div>
+            </div>
+            <button onclick="location.reload()" class="w-full cinzel bg-brown-900 text-white py-4 rounded font-bold hover:bg-black transition-colors">
+                Return to the Shire (Restart)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                q: "리벤델에서 열린 성대한 잔치, 당신의 모습은?",
+                choices: [
+                    { text: "많은 요정들과 대화하며 모험담을 즐겁게 이야기한다.", type: "E" },
+                    { text: "조용한 구석에서 폭포 소리를 들으며 혼자만의 사색에 잠긴다.", type: "I" }
+                ]
+            },
+            {
+                q: "어두운 동굴 앞에 섰을 때, 당신이 먼저 확인하는 것은?",
+                choices: [
+                    { text: "바닥의 발자국, 바람의 냄새 등 구체적인 흔적을 살핀다.", type: "S" },
+                    { text: "이 동굴이 어디로 연결될지, 어떤 위험이 숨어있을지 직감적으로 느낀다.", type: "N" }
+                ]
+            },
+            {
+                q: "동료가 반지의 유혹에 잠시 흔들렸을 때, 당신의 반응은?",
+                choices: [
+                    { text: "이것이 팀 전체에 미칠 위험성과 원칙을 따져 엄격하게 경고한다.", type: "T" },
+                    { text: "동료가 느꼈을 고통과 압박감을 공감하며 따뜻하게 다독여준다.", type: "F" }
+                ]
+            },
+            {
+                q: "내일 있을 대규모 전투를 앞두고 당신은?",
+                choices: [
+                    { text: "모든 보급품과 진형을 완벽하게 점검하고 계획대로 움직인다.", type: "J" },
+                    { text: "상황은 언제든 변하는 법, 전장의 흐름에 따라 유연하게 대처하기로 한다.", type: "P" }
+                ]
+            },
+            {
+                q: "빌보의 생일 파티에서 당신은 어떤 역할을 맡고 싶나요?",
+                choices: [
+                    { text: "불꽃놀이를 주도하고 춤을 추며 분위기를 띄우는 역할", type: "E" },
+                    { text: "친한 친구 몇 명과 앉아 깊은 대화를 나누는 역할", type: "I" }
+                ]
+            },
+            {
+                q: "길을 잃었을 때, 당신은 어떤 방식의 지도를 선호하나요?",
+                choices: [
+                    { text: "강, 산, 이정표가 아주 상세하게 그려진 정확한 지도", type: "S" },
+                    { text: "전체적인 방향과 가능성만을 암시하는 신비로운 고지도", type: "N" }
+                ]
+            },
+            {
+                q: "새로운 무기를 고를 때 가장 중요한 기준은?",
+                choices: [
+                    { text: "살상력, 내구성, 가벼움 등 실질적인 성능", type: "T" },
+                    { text: "무기에 담긴 역사, 그리고 나와의 정서적인 연결감", type: "F" }
+                ]
+            },
+            {
+                q: "모르도르로 향하는 경로를 결정할 때 당신은?",
+                choices: [
+                    { text: "가장 빠르고 확실한 경로를 미리 확정한 후 이동한다.", type: "J" },
+                    { text: "그때그때 적의 눈을 피해 가장 안전해 보이는 길로 돌아간다.", type: "P" }
+                ]
+            },
+            {
+                q: "낯선 이방인이 도움을 요청한다면?",
+                choices: [
+                    { text: "먼저 인사를 건네고 통성명을 하며 통성명을 하며 반갑게 맞이한다.", type: "E" },
+                    { text: "경계하며 멀리서 지켜보다가 꼭 필요할 때만 접근한다.", type: "I" }
+                ]
+            },
+            {
+                q: "간달프의 마법을 보았을 때 당신의 생각은?",
+                choices: [
+                    { text: "빛의 굴절이나 화약의 원리 등 '어떻게' 일어난 일인지 궁금하다.", type: "S" },
+                    { text: "그 마법이 상징하는 희망과 미래의 승리에 대해 생각한다.", type: "N" }
+                ]
+            },
+            {
+                q: "치열한 논쟁 중 당신의 태도는?",
+                choices: [
+                    { text: "누구의 말이 더 논리적이고 사실에 기반했는지가 중요하다.", type: "T" },
+                    { text: "모두의 기분이 상하지 않고 화합하는 결과를 내는 것이 중요하다.", type: "F" }
+                ]
+            },
+            {
+                q: "갑자기 숲속에서 야영을 하게 되었다면?",
+                choices: [
+                    { text: "주변 정리를 마치고 보초 순번을 정해 체계적으로 휴식한다.", type: "J" },
+                    { text: "자연스럽게 불 근처에 자리를 잡고 누워 자유로운 휴식을 즐긴다.", type: "P" }
+                ]
+            }
+        ];
+
+        const characters = {
+            "INTJ": { name: "엘론드", desc: "냉철한 통찰력과 장기적인 비전을 가진 전략가입니다.", emoji: "🧝‍♂️", traits: "독립적이고 전략적이며, 중간계의 역사를 꿰뚫어 보는 지혜를 가졌습니다." },
+            "INTP": { name: "수염나무 (트리비어드)", desc: "느리지만 깊이 있게 생각하며 세상의 이치를 분석합니다.", emoji: "🌳", traits: "논리적이고 객관적이며, 복잡한 문제의 본질을 파고드는 것을 즐깁니다." },
+            "ENTJ": { name: "사루만", desc: "압도적인 카리스마와 지배력을 가진 야망가입니다.", emoji: "🧙‍♂️", traits: "철저한 계획과 효율성을 중시하며, 자신의 목적을 위해 세상을 재편하려 합니다." },
+            "ENTP": { name: "간달프", desc: "지혜로우면서도 예측 불가능한 재치와 유연함을 가졌습니다.", emoji: "🎇", traits: "새로운 아이디어가 넘치며, 위기의 순간에 판도를 바꾸는 기발한 대책을 내놓습니다." },
+            "INFJ": { name: "갈라드리엘", desc: "신비로운 예지력으로 타인의 마음을 읽고 평화를 수호합니다.", emoji: "✨", traits: "통찰력이 뛰어나며, 깊은 신념을 바탕으로 세상을 더 나은 곳으로 만들려 합니다." },
+            "INFP": { name: "프로도 배긴스", desc: "고독한 길에서도 자신의 신념과 선함을 잃지 않는 이상주의자입니다.", emoji: "💍", traits: "상상력이 풍부하고 감수성이 예민하며, 세상을 구원할 조용한 용기를 가졌습니다." },
+            "ENFJ": { name: "아라곤", desc: "사람들을 이끄는 천부적인 리더십과 따뜻한 인품을 가졌습니다.", emoji: "⚔️", traits: "책임감이 강하고 이타적이며, 모두를 하나로 모으는 카리스마가 있습니다." },
+            "ENFP": { name: "피핀", desc: "호기심 많고 유쾌하며, 모두에게 긍정적인 에너지를 줍니다.", emoji: "🍻", traits: "자유분방하고 열정적이며, 예상치 못한 행동으로 희망을 만들어냅니다." },
+            "ISTJ": { name: "보로미르", desc: "자신의 의무와 나라를 위해 헌신하는 원칙주의자입니다.", emoji: "🛡️", traits: "실질적이고 신중하며, 한번 맡은 임무는 끝까지 완수하려 노력합니다." },
+            "ISFJ": { name: "샘와이즈 감지", desc: "변치 않는 충성심과 성실함으로 소중한 사람을 지킵니다.", emoji: "🍳", traits: "헌신적이고 따뜻하며, 묵묵히 자신의 자리에서 최선을 다하는 수호자입니다." },
+            "ESTJ": { name: "에오메르", desc: "질서와 전통을 중시하며 과단성 있게 행동하는 전사입니다.", emoji: "🐎", traits: "실용적이고 체계적이며, 공동체의 안전을 위해 명확한 규칙을 세웁니다." },
+            "ESFJ": { name: "파라미르", desc: "타인의 감정을 잘 배려하며 조화로운 평화를 꿈꿉니다.", emoji: "🏹", traits: "사교적이고 친절하며, 협력을 통해 갈등을 해결하는 능력이 탁월합니다." },
+            "ISTP": { name: "김리", desc: "냉소적인 듯하지만 실력 있고 기술적인 해결사입니다.", emoji: "🪓", traits: "손재주가 좋고 상황 적응력이 빠르며, 말보다는 행동으로 실력을 증명합니다." },
+            "ISFP": { name: "레골라스", desc: "아름다움을 사랑하며 자유로운 영혼을 가진 명사수입니다.", emoji: "🍃", traits: "현재의 순간에 충실하며, 뛰어난 감각과 조화로운 삶을 추구합니다." },
+            "ESTP": { name: "메리", desc: "모험을 두려워하지 않고 실전 감각이 뛰어난 활동가입니다.", emoji: "🍱", traits: "활동적이고 재치 있으며, 위기의 상황에서 가장 빠르게 몸을 던지는 용기가 있습니다." },
+            "ESFP": { name: "톰 봄바딜", desc: "세상의 고난조차 즐거움으로 승화시키는 낙천주의자입니다.", emoji: "🎵", traits: "사교적이고 열정적이며, 지금 이 순간의 즐거움과 생명력을 온몸으로 느낍니다." }
+        };
+
+        let currentQuestion = 0;
+        let scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+
+        function startGame() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('question-counter').innerText = `Question ${currentQuestion + 1}/${questions.length}`;
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('progress-fill').style.width = `${((currentQuestion) / questions.length) * 100}%`;
+
+            const choicesDiv = document.getElementById('choices');
+            choicesDiv.innerHTML = '';
+            q.choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = "btn-choice w-full p-4 rounded-lg text-left font-medium";
+                btn.innerText = choice.text;
+                btn.onclick = () => selectChoice(choice.type);
+                choicesDiv.appendChild(btn);
+            });
+        }
+
+        function selectChoice(type) {
+            scores[type]++;
+            currentQuestion++;
+
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            const mbti = 
+                (scores.E >= scores.I ? "E" : "I") +
+                (scores.S >= scores.N ? "S" : "N") +
+                (scores.T >= scores.F ? "T" : "F") +
+                (scores.J >= scores.P ? "J" : "P");
+
+            const char = characters[mbti];
+            
+            document.getElementById('result-mbti').innerText = mbti;
+            document.getElementById('result-character').innerText = char.name;
+            document.getElementById('character-emoji').innerText = char.emoji;
+            document.getElementById('result-desc').innerText = `"${char.desc}"`;
+            document.getElementById('result-traits').innerText = char.traits;
+        }
+    </script>
+</body>
+</html>
