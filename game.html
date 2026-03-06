@@ -12,6 +12,7 @@
             --ring-gold: #d4af37;
             --deep-brown: #2c1810;
             --parchment: #f4e4bc;
+            --leaf-green: #4a5d23;
         }
 
         body {
@@ -60,12 +61,6 @@
             transition: width 0.5s ease;
         }
 
-        .result-img {
-            max-width: 300px;
-            border-radius: 15px;
-            border: 4px solid var(--ring-gold);
-        }
-        
         .fade-in {
             animation: fadeIn 1s;
         }
@@ -74,70 +69,112 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+
+        /* Bottom Nav Styling */
+        .bottom-nav {
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        }
+
+        .nav-item {
+            color: var(--ring-gold);
+            transition: all 0.3s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-item:hover {
+            color: white;
+            text-shadow: 0 0 10px var(--ring-gold);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+        }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
 
-    <!-- Start Screen -->
-    <div id="start-screen" class="max-w-2xl w-full text-center fade-in">
-        <h1 class="cinzel text-4xl md:text-6xl text-yellow-500 mb-6 drop-shadow-lg">The Lord of the Rings</h1>
-        <h2 class="text-2xl md:text-3xl font-bold mb-8">중간계 원정대 합류 테스트</h2>
-        <div class="parchment-bg p-8 rounded-lg mb-8">
-            <p class="text-lg leading-relaxed mb-6">
-                절대반지를 파괴하기 위한 여정이 시작되었습니다.<br>
-                당신은 어떤 영웅의 기질을 가지고 있습니까?<br>
-                당신의 선택이 중간계의 운명을 결정할 것입니다.
-            </p>
-            <button onclick="startGame()" class="cinzel bg-yellow-600 hover:bg-yellow-700 text-white px-10 py-4 rounded-full text-xl font-bold transition-all transform hover:scale-105 shadow-xl">
-                Begin the Quest
-            </button>
+    <div class="flex-grow flex items-center justify-center w-full max-w-2xl py-10">
+        <!-- Start Screen -->
+        <div id="start-screen" class="w-full text-center fade-in">
+            <h1 class="cinzel text-4xl md:text-6xl text-yellow-500 mb-6 drop-shadow-lg">The Lord of the Rings</h1>
+            <h2 class="text-2xl md:text-3xl font-bold mb-8">중간계 원정대 합류 테스트</h2>
+            <div class="parchment-bg p-8 rounded-lg mb-8">
+                <p class="text-lg leading-relaxed mb-6">
+                    절대반지를 파괴하기 위한 여정이 시작되었습니다.<br>
+                    당신은 어떤 영웅의 기질을 가지고 있습니까?<br>
+                    당신의 선택이 중간계의 운명을 결정할 것입니다.
+                </p>
+                <button onclick="startGame()" class="cinzel bg-yellow-600 hover:bg-yellow-700 text-white px-10 py-4 rounded-full text-xl font-bold transition-all transform hover:scale-105 shadow-xl">
+                    Begin the Quest
+                </button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="w-full hidden">
+            <div class="mb-6">
+                <div class="flex justify-between items-end mb-2">
+                    <span class="cinzel text-yellow-500 font-bold" id="question-counter">Question 1/12</span>
+                    <span class="text-sm opacity-70">원정길을 따라가는 중...</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+            </div>
+
+            <div class="parchment-bg p-8 rounded-lg min-h-[400px] flex flex-col justify-between">
+                <div>
+                    <h3 id="question-text" class="text-2xl font-bold mb-8 text-center leading-tight"></h3>
+                </div>
+                <div id="choices" class="space-y-4">
+                    <!-- Choices injected here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="w-full hidden fade-in">
+            <div class="parchment-bg p-8 rounded-lg text-center relative overflow-hidden">
+                <h3 class="cinzel text-sm uppercase tracking-widest mb-2">당신의 영혼과 닮은 영웅</h3>
+                <h2 id="result-character" class="text-4xl font-bold mb-4 text-yellow-800"></h2>
+                <div class="flex justify-center mb-6">
+                    <div class="text-8xl" id="character-emoji"></div>
+                </div>
+                <div class="mb-6 p-4 bg-white/30 rounded border border-brown-900/20 italic" id="result-desc">
+                </div>
+                <div class="text-left space-y-4 mb-8">
+                    <div class="flex items-center">
+                        <span class="font-bold w-24">MBTI 유형:</span>
+                        <span id="result-mbti" class="cinzel text-lg bg-yellow-800 text-white px-3 py-1 rounded"></span>
+                    </div>
+                    <div id="result-traits" class="text-sm leading-relaxed">
+                    </div>
+                </div>
+                <button onclick="goHome()" class="w-full cinzel bg-brown-900 text-white py-4 rounded font-bold hover:bg-black transition-colors">
+                    Restart Journey
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Quiz Screen -->
-    <div id="quiz-screen" class="max-w-2xl w-full hidden">
-        <div class="mb-6">
-            <div class="flex justify-between items-end mb-2">
-                <span class="cinzel text-yellow-500 font-bold" id="question-counter">Question 1/12</span>
-                <span class="text-sm opacity-70">원정길을 따라가는 중...</span>
-            </div>
-            <div class="progress-bar">
-                <div id="progress-fill" class="progress-fill"></div>
-            </div>
+    <!-- Persistent Bottom Navigation Area (User Selection Area) -->
+    <div class="w-full max-w-2xl bottom-nav mt-8 py-4 px-6 flex justify-around items-center rounded-t-2xl">
+        <div onclick="goHome()" class="nav-item">
+            <span class="nav-icon">🏡</span>
+            <span class="cinzel text-xs font-bold tracking-widest">BAG END</span>
         </div>
-
-        <div class="parchment-bg p-8 rounded-lg min-h-[400px] flex flex-col justify-between">
-            <div>
-                <h3 id="question-text" class="text-2xl font-bold mb-8 text-center leading-tight"></h3>
-            </div>
-            <div id="choices" class="space-y-4">
-                <!-- Choices will be injected here -->
-            </div>
+        <div class="opacity-30 cursor-not-allowed nav-item">
+            <span class="nav-icon">📜</span>
+            <span class="cinzel text-xs font-bold tracking-widest">LORE</span>
         </div>
-    </div>
-
-    <!-- Result Screen -->
-    <div id="result-screen" class="max-w-2xl w-full hidden fade-in">
-        <div class="parchment-bg p-8 rounded-lg text-center relative overflow-hidden">
-            <h3 class="cinzel text-sm uppercase tracking-widest mb-2">당신의 영혼과 닮은 영웅</h3>
-            <h2 id="result-character" class="text-4xl font-bold mb-4 text-yellow-800"></h2>
-            <div class="flex justify-center mb-6" id="result-image-container">
-                <!-- SVG or Emoji Icon placeholder -->
-                <div class="text-8xl" id="character-emoji"></div>
-            </div>
-            <div class="mb-6 p-4 bg-white/30 rounded border border-brown-900/20 italic" id="result-desc">
-            </div>
-            <div class="text-left space-y-4 mb-8">
-                <div class="flex items-center">
-                    <span class="font-bold w-24">MBTI 유형:</span>
-                    <span id="result-mbti" class="cinzel text-lg bg-yellow-800 text-white px-3 py-1 rounded"></span>
-                </div>
-                <div id="result-traits" class="text-sm leading-relaxed">
-                </div>
-            </div>
-            <button onclick="location.reload()" class="w-full cinzel bg-brown-900 text-white py-4 rounded font-bold hover:bg-black transition-colors">
-                Return to the Shire (Restart)
-            </button>
+        <div class="opacity-30 cursor-not-allowed nav-item">
+            <span class="nav-icon">🗺️</span>
+            <span class="cinzel text-xs font-bold tracking-widest">MAP</span>
         </div>
     </div>
 
@@ -202,7 +239,7 @@
             {
                 q: "낯선 이방인이 도움을 요청한다면?",
                 choices: [
-                    { text: "먼저 인사를 건네고 통성명을 하며 통성명을 하며 반갑게 맞이한다.", type: "E" },
+                    { text: "먼저 인사를 건네고 통성명을 하며 반갑게 맞이한다.", type: "E" },
                     { text: "경계하며 멀리서 지켜보다가 꼭 필요할 때만 접근한다.", type: "I" }
                 ]
             },
@@ -230,22 +267,22 @@
         ];
 
         const characters = {
-            "INTJ": { name: "엘론드", desc: "냉철한 통찰력과 장기적인 비전을 가진 전략가입니다.", emoji: "🧝‍♂️", traits: "독립적이고 전략적이며, 중간계의 역사를 꿰뚫어 보는 지혜를 가졌습니다." },
-            "INTP": { name: "수염나무 (트리비어드)", desc: "느리지만 깊이 있게 생각하며 세상의 이치를 분석합니다.", emoji: "🌳", traits: "논리적이고 객관적이며, 복잡한 문제의 본질을 파고드는 것을 즐깁니다." },
-            "ENTJ": { name: "사루만", desc: "압도적인 카리스마와 지배력을 가진 야망가입니다.", emoji: "🧙‍♂️", traits: "철저한 계획과 효율성을 중시하며, 자신의 목적을 위해 세상을 재편하려 합니다." },
-            "ENTP": { name: "간달프", desc: "지혜로우면서도 예측 불가능한 재치와 유연함을 가졌습니다.", emoji: "🎇", traits: "새로운 아이디어가 넘치며, 위기의 순간에 판도를 바꾸는 기발한 대책을 내놓습니다." },
-            "INFJ": { name: "갈라드리엘", desc: "신비로운 예지력으로 타인의 마음을 읽고 평화를 수호합니다.", emoji: "✨", traits: "통찰력이 뛰어나며, 깊은 신념을 바탕으로 세상을 더 나은 곳으로 만들려 합니다." },
-            "INFP": { name: "프로도 배긴스", desc: "고독한 길에서도 자신의 신념과 선함을 잃지 않는 이상주의자입니다.", emoji: "💍", traits: "상상력이 풍부하고 감수성이 예민하며, 세상을 구원할 조용한 용기를 가졌습니다." },
-            "ENFJ": { name: "아라곤", desc: "사람들을 이끄는 천부적인 리더십과 따뜻한 인품을 가졌습니다.", emoji: "⚔️", traits: "책임감이 강하고 이타적이며, 모두를 하나로 모으는 카리스마가 있습니다." },
-            "ENFP": { name: "피핀", desc: "호기심 많고 유쾌하며, 모두에게 긍정적인 에너지를 줍니다.", emoji: "🍻", traits: "자유분방하고 열정적이며, 예상치 못한 행동으로 희망을 만들어냅니다." },
-            "ISTJ": { name: "보로미르", desc: "자신의 의무와 나라를 위해 헌신하는 원칙주의자입니다.", emoji: "🛡️", traits: "실질적이고 신중하며, 한번 맡은 임무는 끝까지 완수하려 노력합니다." },
-            "ISFJ": { name: "샘와이즈 감지", desc: "변치 않는 충성심과 성실함으로 소중한 사람을 지킵니다.", emoji: "🍳", traits: "헌신적이고 따뜻하며, 묵묵히 자신의 자리에서 최선을 다하는 수호자입니다." },
-            "ESTJ": { name: "에오메르", desc: "질서와 전통을 중시하며 과단성 있게 행동하는 전사입니다.", emoji: "🐎", traits: "실용적이고 체계적이며, 공동체의 안전을 위해 명확한 규칙을 세웁니다." },
-            "ESFJ": { name: "파라미르", desc: "타인의 감정을 잘 배려하며 조화로운 평화를 꿈꿉니다.", emoji: "🏹", traits: "사교적이고 친절하며, 협력을 통해 갈등을 해결하는 능력이 탁월합니다." },
-            "ISTP": { name: "김리", desc: "냉소적인 듯하지만 실력 있고 기술적인 해결사입니다.", emoji: "🪓", traits: "손재주가 좋고 상황 적응력이 빠르며, 말보다는 행동으로 실력을 증명합니다." },
-            "ISFP": { name: "레골라스", desc: "아름다움을 사랑하며 자유로운 영혼을 가진 명사수입니다.", emoji: "🍃", traits: "현재의 순간에 충실하며, 뛰어난 감각과 조화로운 삶을 추구합니다." },
-            "ESTP": { name: "메리", desc: "모험을 두려워하지 않고 실전 감각이 뛰어난 활동가입니다.", emoji: "🍱", traits: "활동적이고 재치 있으며, 위기의 상황에서 가장 빠르게 몸을 던지는 용기가 있습니다." },
-            "ESFP": { name: "톰 봄바딜", desc: "세상의 고난조차 즐거움으로 승화시키는 낙천주의자입니다.", emoji: "🎵", traits: "사교적이고 열정적이며, 지금 이 순간의 즐거움과 생명력을 온몸으로 느낍니다." }
+            "INTJ": { name: "엘론드", desc: "냉철한 통찰력과 장기적인 비전을 가진 전략가입니다.", emoji: "🧝‍♂️", traits: "독립적이고 전략적이며, 중간계의 지혜를 가졌습니다." },
+            "INTP": { name: "트리비어드", desc: "깊이 있게 생각하며 세상의 이치를 분석합니다.", emoji: "🌳", traits: "논리적이고 객관적인 관찰자입니다." },
+            "ENTJ": { name: "사루만", desc: "압도적인 카리스마와 지배력을 가진 야망가입니다.", emoji: "🧙‍♂️", traits: "철저한 계획과 효율성을 중시합니다." },
+            "ENTP": { name: "간달프", desc: "예측 불가능한 재치와 유연함을 가졌습니다.", emoji: "🎇", traits: "새로운 아이디어로 판도를 바꾸는 마법사입니다." },
+            "INFJ": { name: "갈라드리엘", desc: "신비로운 예지력으로 타인의 마음을 읽습니다.", emoji: "✨", traits: "통찰력이 뛰어나며 조용한 수호자입니다." },
+            "INFP": { name: "프로도 배긴스", desc: "자신의 신념과 선함을 잃지 않는 이상주의자입니다.", emoji: "💍", traits: "조용한 용기와 풍부한 감수성을 가졌습니다." },
+            "ENFJ": { name: "아라곤", desc: "사람들을 이끄는 따뜻한 인품의 리더입니다.", emoji: "⚔️", traits: "책임감이 강하고 이타적인 왕입니다." },
+            "ENFP": { name: "피핀", desc: "호기심 많고 유쾌하며 희망을 주는 에너지입니다.", emoji: "🍻", traits: "자유롭고 열정적인 모험가입니다." },
+            "ISTJ": { name: "보로미르", desc: "의무와 나라를 위해 헌신하는 원칙주의자입니다.", emoji: "🛡️", traits: "실질적이고 신중한 전사입니다." },
+            "ISFJ": { name: "샘와이즈 감지", desc: "변치 않는 충성심으로 소중한 사람을 지킵니다.", emoji: "🍳", traits: "가장 헌신적이고 믿음직한 친구입니다." },
+            "ESTJ": { name: "에오메르", desc: "질서와 전통을 중시하는 결단력 있는 전사입니다.", emoji: "🐎", traits: "체계적이고 행동력이 뛰어납니다." },
+            "ESFJ": { name: "파라미르", desc: "조화로운 평화와 타인의 감정을 배려합니다.", emoji: "🏹", traits: "협력을 중요시하는 사교적인 지도자입니다." },
+            "ISTP": { name: "김리", desc: "실력 있고 기술적인 해결사입니다.", emoji: "🪓", traits: "상황 적응력이 빠르고 실천적입니다." },
+            "ISFP": { name: "레골라스", desc: "아름다움을 사랑하는 자유로운 명사수입니다.", emoji: "🍃", traits: "예술적 감각과 감각적인 삶을 즐깁니다." },
+            "ESTP": { name: "메리", desc: "실전 감각이 뛰어난 용감한 활동가입니다.", emoji: "🍱", traits: "재치 있고 빠른 행동으로 위기를 넘깁니다." },
+            "ESFP": { name: "톰 봄바딜", desc: "고난조차 즐거움으로 승화시키는 낙천주의자입니다.", emoji: "🎵", traits: "현재의 즐거움에 충실한 영혼입니다." }
         };
 
         let currentQuestion = 0;
@@ -257,11 +294,19 @@
             showQuestion();
         }
 
+        function goHome() {
+            currentQuestion = 0;
+            scores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+
         function showQuestion() {
             const q = questions[currentQuestion];
             document.getElementById('question-counter').innerText = `Question ${currentQuestion + 1}/${questions.length}`;
             document.getElementById('question-text').innerText = q.q;
-            document.getElementById('progress-fill').style.width = `${((currentQuestion) / questions.length) * 100}%`;
+            document.getElementById('progress-fill').style.width = `${(currentQuestion / questions.length) * 100}%`;
 
             const choicesDiv = document.getElementById('choices');
             choicesDiv.innerHTML = '';
@@ -277,7 +322,6 @@
         function selectChoice(type) {
             scores[type]++;
             currentQuestion++;
-
             if (currentQuestion < questions.length) {
                 showQuestion();
             } else {
@@ -296,7 +340,6 @@
                 (scores.J >= scores.P ? "J" : "P");
 
             const char = characters[mbti];
-            
             document.getElementById('result-mbti').innerText = mbti;
             document.getElementById('result-character').innerText = char.name;
             document.getElementById('character-emoji').innerText = char.emoji;
