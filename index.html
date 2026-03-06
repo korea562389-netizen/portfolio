@@ -34,6 +34,17 @@
             color: white;
         }
 
+        /* Floating animation for the hero image */
+        @keyframes floating {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .hero-image-float {
+            animation: floating 4s ease-in-out infinite;
+        }
+
         /* Modal styling */
         #modal {
             display: none;
@@ -69,19 +80,42 @@
     </nav>
 
     <!-- Hero Section -->
-    <section id="home" class="relative h-screen flex items-center justify-center overflow-hidden">
+    <section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        <!-- Background elements -->
         <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1590483734724-383b853b237d?auto=format&fit=crop&q=80&w=1920" alt="Background" class="w-full h-full object-cover opacity-30">
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/50 to-slate-900"></div>
+            <img src="https://images.unsplash.com/photo-1590483734724-383b853b237d?auto=format&fit=crop&q=80&w=1920" alt="Background" class="w-full h-full object-cover opacity-20">
+            <div class="absolute inset-0 bg-gradient-to-b from-slate-900/10 via-slate-900/60 to-slate-900"></div>
         </div>
         
-        <div class="relative z-10 text-center px-4">
-            <h2 class="text-blue-400 font-medium tracking-widest mb-2 animate-bounce uppercase text-sm md:text-base">미니어처 페인팅</h2>
-            <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">작은 세계에<br><span class="text-blue-500">생명</span>을 불어넣다</h1>
-            <p class="text-gray-400 max-w-lg mx-auto mb-8 text-sm md:text-lg">섬세한 붓터치와 정교한 명암 조절로 미니어처에 이야기를 담는 페인터 신상균입니다.</p>
-            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="#gallery" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 rounded-full transition font-bold">갤러리 보기</a>
-                <a href="#contact" class="px-8 py-3 border border-white/20 hover:bg-white/10 rounded-full transition font-bold">의뢰 문의하기</a>
+        <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- Text Content -->
+            <div class="text-center lg:text-left order-2 lg:order-1">
+                <h2 class="text-blue-400 font-medium tracking-widest mb-4 animate-pulse uppercase text-sm md:text-base">미니어처 페인팅</h2>
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">작은 세계에<br><span class="text-blue-500">생명</span>을 불어넣다</h1>
+                <p class="text-gray-400 max-w-lg mx-auto lg:mx-0 mb-8 text-sm md:text-lg leading-relaxed">
+                    섬세한 붓터치와 정교한 명암 조절로 미니어처에 이야기를 담는 페인터 신상균입니다. 수만 조각의 디테일을 하나의 작품으로 완성합니다.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4">
+                    <a href="#gallery" class="px-8 py-4 bg-blue-600 hover:bg-blue-700 rounded-full transition font-bold text-center shadow-lg shadow-blue-600/30">포트폴리오 감상</a>
+                    <a href="#contact" class="px-8 py-4 border border-white/20 hover:bg-white/10 rounded-full transition font-bold text-center">의뢰 및 견적 문의</a>
+                </div>
+            </div>
+
+            <!-- Featured Hero Image -->
+            <div class="order-1 lg:order-2 flex justify-center items-center">
+                <div class="relative w-72 h-72 md:w-96 md:h-96">
+                    <!-- Glow effect behind the image -->
+                    <div class="absolute inset-0 bg-blue-500/20 blur-[80px] rounded-full"></div>
+                    <!-- Main Featured Model Image -->
+                    <div class="hero-image-float relative z-10 w-full h-full">
+                        <img src="https://images.unsplash.com/photo-1615555035928-f716558b7241?auto=format&fit=crop&q=80&w=1000" 
+                             alt="Featured Miniature" 
+                             class="w-full h-full object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.8)]"
+                             onerror="this.src='https://via.placeholder.com/600x600/0f172a/3b82f6?text=Miniature+Masterpiece'">
+                    </div>
+                    <!-- Decorative element -->
+                    <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 w-48 h-8 bg-black/40 blur-xl rounded-full z-0"></div>
+                </div>
             </div>
         </div>
     </section>
