@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniPainter | 미니어처 페인팅 포트폴리오</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #0f172a;
+            color: #f1f5f9;
+            scroll-behavior: smooth;
+        }
+
+        .glass-morphism {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gallery-item {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .filter-btn.active {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        /* Modal styling */
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .hide { display: none; }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass-morphism py-4 px-6 md:px-12 flex justify-between items-center">
+        <div class="text-2xl font-bold tracking-tighter text-blue-500">MINI<span class="text-white">ART</span></div>
+        <div class="hidden md:flex space-x-8 text-sm font-medium">
+            <a href="#home" class="hover:text-blue-400 transition">HOME</a>
+            <a href="#gallery" class="hover:text-blue-400 transition">GALLERY</a>
+            <a href="#about" class="hover:text-blue-400 transition">ABOUT</a>
+            <a href="#services" class="hover:text-blue-400 transition">SERVICES</a>
+            <a href="#contact" class="hover:text-blue-400 transition">CONTACT</a>
+        </div>
+        <button class="md:hidden text-white focus:outline-none" id="mobile-menu-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1590483734724-383b853b237d?auto=format&fit=crop&q=80&w=1920" alt="Background" class="w-full h-full object-cover opacity-30">
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-slate-900/50 to-slate-900"></div>
+        </div>
+        
+        <div class="relative z-10 text-center px-4">
+            <h2 class="text-blue-400 font-medium tracking-widest mb-2 animate-bounce uppercase text-sm md:text-base">Mastering the Art of the Small</h2>
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">작은 세계에<br><span class="text-blue-500">생명</span>을 불어넣다</h1>
+            <p class="text-gray-400 max-w-lg mx-auto mb-8 text-sm md:text-lg">섬세한 붓터치와 정교한 명암 조절로 미니어처에 이야기를 담는 페인터 신상균입니다.</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#gallery" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 rounded-full transition font-bold">갤러리 보기</a>
+                <a href="#contact" class="px-8 py-3 border border-white/20 hover:bg-white/10 rounded-full transition font-bold">의뢰 문의하기</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-24 px-6 md:px-12 bg-slate-900">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+                <div>
+                    <h2 class="text-3xl font-bold mb-2 text-white">작품 갤러리</h2>
+                    <p class="text-gray-500">카테고리를 선택하여 장르별 작품을 감상해보세요.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button class="filter-btn active px-4 py-2 rounded-lg glass-morphism text-sm transition" data-filter="all">전체</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg glass-morphism text-sm transition" data-filter="fantasy">판타지</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg glass-morphism text-sm transition" data-filter="scifi">SF</button>
+                    <button class="filter-btn px-4 py-2 rounded-lg glass-morphism text-sm transition" data-filter="historical">역사</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="gallery-grid">
+                <!-- Item 1 -->
+                <div class="gallery-item group cursor-pointer relative overflow-hidden rounded-xl bg-slate-800" data-category="fantasy" onclick="openModal('엘프 레인저', 'https://images.unsplash.com/photo-1615555035928-f716558b7241?auto=format&fit=crop&q=80&w=800', '섬세한 NMM(Non-Metallic Metal) 기법을 사용한 금속 표현과 자연스러운 피부톤 표현에 집중한 작품입니다.')">
+                    <img src="https://images.unsplash.com/photo-1615555035928-f716558b7241?auto=format&fit=crop&q=80&w=800" alt="Fantasy Mini" class="w-full h-80 object-cover transition duration-500 group-hover:scale-110 opacity-80 group-hover:opacity-100">
+                    <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
+                        <span class="text-xs text-blue-400 font-bold uppercase tracking-wider">Fantasy</span>
+                        <h3 class="text-xl font-bold text-white">엘프 레인저</h3>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="gallery-item group cursor-pointer relative overflow-hidden rounded-xl bg-slate-800" data-category="scifi" onclick="openModal('스페이스 마린', 'https://images.unsplash.com/photo-1605806616949-1e87b487fc2f?auto=format&fit=crop&q=80&w=800', '배틀 대미지(Battle Damage) 효과와 웨더링을 통해 전장의 긴박함을 표현했습니다.')">
+                    <img src="https://images.unsplash.com/photo-1605806616949-1e87b487fc2f?auto=format&fit=crop&q=80&w=800" alt="SciFi Mini" class="w-full h-80 object-cover transition duration-500 group-hover:scale-110 opacity-80 group-hover:opacity-100">
+                    <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
+                        <span class="text-xs text-blue-400 font-bold uppercase tracking-wider">Sci-Fi</span>
+                        <h3 class="text-xl font-bold text-white">스페이스 마린</h3>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="gallery-item group cursor-pointer relative overflow-hidden rounded-xl bg-slate-800" data-category="historical" onclick="openModal('나폴레옹 보병', 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&q=80&w=800', '역사적 고증에 충실한 컬러 팔레트와 정밀한 복식 세부 묘사가 특징입니다.')">
+                    <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&q=80&w=800" alt="Historical Mini" class="w-full h-80 object-cover transition duration-500 group-hover:scale-110 opacity-80 group-hover:opacity-100">
+                    <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
+                        <span class="text-xs text-blue-400 font-bold uppercase tracking-wider">Historical</span>
+                        <h3 class="text-xl font-bold text-white">나폴레옹 보병</h3>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="gallery-item group cursor-pointer relative overflow-hidden rounded-xl bg-slate-800" data-category="fantasy" onclick="openModal('드래곤 슬레이어', 'https://images.unsplash.com/photo-1593085512500-5d55148d6f0d?auto=format&fit=crop&q=80&w=800', '강렬한 OSL(Object Source Lighting) 기법으로 마법 효과를 극대화했습니다.')">
+                    <img src="https://images.unsplash.com/photo-1593085512500-5d55148d6f0d?auto=format&fit=crop&q=80&w=800" alt="Fantasy Mini 2" class="w-full h-80 object-cover transition duration-500 group-hover:scale-110 opacity-80 group-hover:opacity-100">
+                    <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
+                        <span class="text-xs text-blue-400 font-bold uppercase tracking-wider">Fantasy</span>
+                        <h3 class="text-xl font-bold text-white">드래곤 슬레이어</h3>
+                    </div>
+                </div>
+
+                <!-- Item 5 -->
+                <div class="gallery-item group cursor-pointer relative overflow-hidden rounded-xl bg-slate-800" data-category="scifi" onclick="openModal('사이버펑크 오토바이', 'https://images.unsplash.com/photo-1558981403-c5f91cbba527?auto=format&fit=crop&q=80&w=800', '네온 조명 효과와 고광택 크롬 도색 표현에 중점을 두었습니다.')">
+                    <img src="https://images.unsplash.com/photo-1558981403-c5f91cbba527?auto=format&fit=crop&q=80&w=800" alt="SciFi Mini 2" class="w-full h-80 object-cover transition duration-500 group-hover:scale-110 opacity-80 group-hover:opacity-100">
+                    <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
+                        <span class="text-xs text-blue-400 font-bold uppercase tracking-wider">Sci-Fi</span>
+                        <h3 class="text-xl font-bold text-white">사이버펑크 오토바이</h3>
+                    </div>
+                </div>
+
+                <!-- Item 6 -->
+                <div class="gallery-item group cursor-pointer relative overflow-hidden rounded-xl bg-slate-800" data-category="historical" onclick="openModal('로마 백부장', 'https://images.unsplash.com/photo-1596733430284-f7423ff43b33?auto=format&fit=crop&q=80&w=800', '갑옷의 질감과 실제 금속 가루를 섞은 페인트를 사용해 사실감을 높였습니다.')">
+                    <img src="https://images.unsplash.com/photo-1596733430284-f7423ff43b33?auto=format&fit=crop&q=80&w=800" alt="Historical Mini 2" class="w-full h-80 object-cover transition duration-500 group-hover:scale-110 opacity-80 group-hover:opacity-100">
+                    <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black to-transparent">
+                        <span class="text-xs text-blue-400 font-bold uppercase tracking-wider">Historical</span>
+                        <h3 class="text-xl font-bold text-white">로마 백부장</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 px-6 md:px-12">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
+            <div class="w-full md:w-1/2">
+                <div class="relative">
+                    <img src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&q=80&w=800" alt="Artist at work" class="rounded-2xl shadow-2xl relative z-10">
+                    <div class="absolute -bottom-6 -right-6 w-full h-full border-2 border-blue-500 rounded-2xl z-0"></div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2">
+                <h2 class="text-3xl font-bold mb-6">안녕하세요, 페인터 <span class="text-blue-500">김민준</span>입니다.</h2>
+                <p class="text-gray-400 mb-6 leading-relaxed">
+                    저는 지난 10년간 작은 캔버스 위에 세상을 그리는 일에 매료되어 왔습니다. 미니어처 페인팅은 단순히 색을 칠하는 것을 넘어, 캐릭터의 역사와 세계관을 붓 끝으로 시각화하는 과정입니다.
+                </p>
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div>
+                        <h4 class="text-white font-bold mb-2">Techniques</h4>
+                        <ul class="text-sm text-gray-500 space-y-1">
+                            <li>• Airbrush Pre-shading</li>
+                            <li>• Non-Metallic Metal (NMM)</li>
+                            <li>• Wet Blending & Glazing</li>
+                            <li>• Advanced Weathering</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold mb-2">Experience</h4>
+                        <ul class="text-sm text-gray-500 space-y-1">
+                            <li>• Gold Award, 2022 Expo</li>
+                            <li>• 500+ Commissions Done</li>
+                            <li>• Painting Workshop Lead</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-blue-600/20 rounded-lg">
+                        <span class="text-blue-500 font-bold text-2xl">10+</span>
+                        <p class="text-xs text-gray-400 uppercase">Years Exp.</p>
+                    </div>
+                    <div class="p-3 bg-blue-600/20 rounded-lg">
+                        <span class="text-blue-500 font-bold text-2xl">1.2k</span>
+                        <p class="text-xs text-gray-400 uppercase">Project Done</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-24 px-6 md:px-12 bg-slate-900">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold mb-4">페인팅 서비스 및 가격</h2>
+                <p class="text-gray-500">원하시는 퀄리티와 예산에 맞춘 다양한 페인팅 단계를 제공합니다.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Tier 1 -->
+                <div class="p-8 rounded-2xl glass-morphism hover:border-blue-500 transition-all">
+                    <h3 class="text-xl font-bold mb-2 text-white">Tabletop Plus</h3>
+                    <p class="text-blue-500 text-3xl font-bold mb-4">₩ 30,000 ~</p>
+                    <p class="text-sm text-gray-400 mb-6">게임 플레이를 위한 깔끔하고 빠른 완성 단계입니다.</p>
+                    <ul class="text-sm space-y-3 mb-8">
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> 기본 3색 및 쉐이딩</li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> 드라이브러싱 하이라이트</li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> 기본 베이싱 제공</li>
+                    </ul>
+                    <a href="#contact" class="block text-center py-3 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-500 hover:text-white transition">선택하기</a>
+                </div>
+
+                <!-- Tier 2 -->
+                <div class="p-8 rounded-2xl bg-blue-600 shadow-xl scale-105 border-none">
+                    <h3 class="text-xl font-bold mb-2 text-white">Collector Tier</h3>
+                    <p class="text-white text-3xl font-bold mb-4">₩ 80,000 ~</p>
+                    <p class="text-blue-100 text-sm mb-6">진열장에 보관하기에 충분한 정교한 묘사가 들어갑니다.</p>
+                    <ul class="text-sm space-y-3 mb-8">
+                        <li class="flex items-center gap-2 text-white"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> 에어브러쉬 블렌딩</li>
+                        <li class="flex items-center gap-2 text-white"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> 2~3단계 레이어링 하이라이트</li>
+                        <li class="flex items-center gap-2 text-white"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> 웨더링 및 텍스쳐 베이싱</li>
+                    </ul>
+                    <a href="#contact" class="block text-center py-3 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition font-bold">인기 항목</a>
+                </div>
+
+                <!-- Tier 3 -->
+                <div class="p-8 rounded-2xl glass-morphism hover:border-blue-500 transition-all">
+                    <h3 class="text-xl font-bold mb-2 text-white">Display Master</h3>
+                    <p class="text-blue-500 text-3xl font-bold mb-4">상담 후 결정</p>
+                    <p class="text-sm text-gray-400 mb-6">대회 출품 수준의 최고급 테크닉이 모두 집약된 작품입니다.</p>
+                    <ul class="text-sm space-y-3 mb-8">
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> 전신 NMM 및 OSL 효과</li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> 고해상도 프리핸드(무늬 그리기)</li>
+                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg> 디오라마형 베이스 제작</li>
+                    </ul>
+                    <a href="#contact" class="block text-center py-3 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-500 hover:text-white transition">문의하기</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 px-6 md:px-12">
+        <div class="max-w-4xl mx-auto glass-morphism p-8 md:p-12 rounded-3xl">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">작업 의뢰하기</h2>
+                <p class="text-gray-400">당신의 소중한 모델을 멋지게 변신시켜 드립니다. 아래 양식을 작성해 주세요.</p>
+            </div>
+            
+            <form id="contact-form" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">성함</label>
+                        <input type="text" placeholder="홍길동" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">이메일</label>
+                        <input type="email" placeholder="example@email.com" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">프로젝트 타입</label>
+                    <select class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition appearance-none">
+                        <option>단일 캐릭터 (Collector)</option>
+                        <option>분대/부대 단위 (Tabletop Plus)</option>
+                        <option>대형 괴수/기계 (Display)</option>
+                        <option>기타 커스텀 의뢰</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">문의 내용</label>
+                    <textarea rows="4" placeholder="모델 종류와 원하시는 색상 컨셉 등을 알려주세요." class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition"></textarea>
+                </div>
+                <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-700 rounded-xl font-bold text-lg transition shadow-lg shadow-blue-600/20">메시지 보내기</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 md:px-12 border-t border-white/10 text-center">
+        <div class="mb-6 flex justify-center space-x-6">
+            <a href="#" class="text-gray-500 hover:text-white transition">Instagram</a>
+            <a href="#" class="text-gray-500 hover:text-white transition">ArtStation</a>
+            <a href="#" class="text-gray-500 hover:text-white transition">Twitter</a>
+            <a href="#" class="text-gray-500 hover:text-white transition">Discord</a>
+        </div>
+        <p class="text-gray-600 text-sm">© 2024 MiniArt Studio. All rights reserved. </p>
+        <p class="text-gray-600 text-xs mt-2">Designed for the Love of Miniature Art.</p>
+    </footer>
+
+    <!-- Image Modal -->
+    <div id="modal" class="flex items-center justify-center p-4">
+        <div class="max-w-4xl w-full bg-slate-900 rounded-2xl overflow-hidden relative shadow-2xl flex flex-col md:flex-row">
+            <button onclick="closeModal()" class="absolute top-4 right-4 z-20 bg-black/50 p-2 rounded-full hover:bg-black transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="w-full md:w-2/3 h-64 md:h-auto">
+                <img id="modal-img" src="" alt="Zoomed view" class="w-full h-full object-cover">
+            </div>
+            <div class="w-full md:w-1/3 p-8 flex flex-col justify-center">
+                <h3 id="modal-title" class="text-2xl font-bold mb-4">작품 제목</h3>
+                <p id="modal-desc" class="text-gray-400 mb-6">상세 설명이 여기에 들어갑니다.</p>
+                <button onclick="closeModal()" class="py-2 px-6 bg-blue-600 rounded-lg self-start">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gallery Filtering
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Active button state
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const filter = btn.getAttribute('data-filter');
+
+                galleryItems.forEach(item => {
+                    if (filter === 'all' || item.getAttribute('data-category') === filter) {
+                        item.classList.remove('hide');
+                    } else {
+                        item.classList.add('hide');
+                    }
+                });
+            });
+        });
+
+        // Modal Functionality
+        const modal = document.getElementById('modal');
+        const modalImg = document.getElementById('modal-img');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDesc = document.getElementById('modal-desc');
+
+        function openModal(title, imgSrc, desc) {
+            modalImg.src = imgSrc;
+            modalTitle.innerText = title;
+            modalDesc.innerText = desc;
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent scroll
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restore scroll
+        }
+
+        // Close modal on click outside content
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // Form submission handling
+        document.getElementById('contact-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const messageBox = document.createElement('div');
+            messageBox.className = 'fixed bottom-10 right-10 bg-blue-600 text-white p-6 rounded-2xl shadow-2xl z-[2000] animate-bounce';
+            messageBox.innerHTML = '<strong>성공!</strong> 메시지가 성공적으로 전송되었습니다.';
+            document.body.appendChild(messageBox);
+            
+            e.target.reset();
+            
+            setTimeout(() => {
+                messageBox.remove();
+            }, 3000);
+        });
+
+        // Mobile Menu (Simple toggle)
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        mobileBtn.addEventListener('click', () => {
+            const navLinks = document.querySelector('.hidden.md\\:flex');
+            navLinks.classList.toggle('hidden');
+            navLinks.classList.toggle('flex');
+            navLinks.classList.toggle('flex-col');
+            navLinks.classList.toggle('absolute');
+            navLinks.classList.toggle('top-full');
+            navLinks.classList.toggle('left-0');
+            navLinks.classList.toggle('w-full');
+            navLinks.classList.toggle('bg-slate-900');
+            navLinks.classList.toggle('p-6');
+            navLinks.classList.toggle('space-x-0');
+            navLinks.classList.toggle('space-y-4');
+        });
+    </script>
+</body>
+</html>
